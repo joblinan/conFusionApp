@@ -46,7 +46,8 @@ angular.module('conFusionApp', ['ionic', 'conFusionApp.controllers', 'conFusionA
       url: '/aboutus',
       views: {
         'mainContent': {
-          templateUrl: 'templates/aboutus.html'
+          templateUrl: 'templates/aboutus.html',
+          controller: 'AboutController' 
         }
       }
     })

@@ -218,9 +218,10 @@ angular.module('conFusionApp.controllers', [])
             );
     }])
 
-    .controller('AboutController', ['$scope', 'corporateFactory', function ($scope, corporateFactory) {
-        var showLeaders = false;
-        var leadersMsg = "Loading...";
+    .controller('AboutController', ['$scope', 'corporateFactory', 'baseURL', function ($scope, corporateFactory, baseURL) {
+        $scope.baseURL = baseURL;
+        $scope.showLeaders = false;
+        $scope.leadersMsg = "Loading...";
         
         $scope.leaders = corporateFactory.getLeaders().query(
             function (response) {
