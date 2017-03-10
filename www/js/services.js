@@ -32,4 +32,31 @@ angular.module('conFusionApp.services', ['ngResource'])
         
         return feedbackfac;
     }])
+
+	.factory('favoriteFactory', ['$resource', 'baseURL', function($resource, baseURL) {
+		var favFac = {};
+		var favorites = [];
+		
+		favFac.addToFavorites = function (index) {
+			for (var i = 0; i < favorites.length; i++) {
+				if (favorites[i].id === index)
+					return;
+			}
+			favorites.push({id: index});
+		};
+		
+		favFac.getFavorites = function () {
+			return favorites;
+		};
+		
+		favFac.deleteFromFavorites = function (index) {
+			for (var i = 0; i < favorites.length; i++) {
+				if (favorites[i].id === index) {
+					favorites.splice(i, 1);
+				}
+			}
+		};
+		
+		return favFac;
+	}])
 ;
