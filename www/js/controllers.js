@@ -147,10 +147,16 @@ angular.module('conFusionApp.controllers', [])
         };
     }])
 
-    .controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'baseURL', function($scope, $stateParams, menuFactory, baseURL) {
+    .controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicPopover', '$ionicModal', '$timeout', function($scope, $stateParams, menuFactory, favoriteFactory, baseURL, $ionicPopover, $ionicModal, $timeout) {
         $scope.baseURL = baseURL;
         $scope.showDish = false;
         $scope.message = "Loading...";
+				
+				$ionicPopover.fromTemplateUrl('templates/dish-detail-popover.html', {
+					scope: $scope
+				}).then(function(popover) {
+					$scope.popover = popover;
+				});
         
         $scope.dish = menuFactory.getDishes().get({id:parseInt($stateParams.id, 10)})
             .$promise.then(
@@ -164,9 +170,42 @@ angular.module('conFusionApp.controllers', [])
             );
 
         $scope.commentsOrder = "";
+				
+				$scope.openDishDetailPopover = function ($event) {
+						$scope.popover.show($event);
+				};
+				
+				$scope.closeDishDetailPopover = function() {
+					$scope.popover.hide();
+				};
+
+				$scope.addFavorite = function() {
+					favoriteFactory.addToFavorites($scope.dish.id);
+					$scope.closeDishDetailPopover();
+				};
+				
+				$ionicModal.fromTemplateUrl('templates/dish-comment.html', {scope: $scope})
+				.then (function (modal) {
+					$scope.commentModal = modal;
+				});
+
+				$scope.addComment = function () {
+					$scope.closeDishDetailPopover();
+					/**
+						using $timeout to solve the bug that app freezes after popover and modal closed.
+						https://stackoverflow.com/questions/40491717/ionic-app-freezes-or-stops-working-after-popover-and-modal-closes/40561429#40561429
+					**/
+					$timeout(function(){
+						$scope.commentModal.show();
+					}, 0);
+				};
+				
+				$scope.closeComment = function () {
+					$scope.commentModal.hide();
+				};
     }])
 
-    .controller('DishCommentController', ['$scope', 'menuFactory', function($scope, menuFactory) {
+    .controller('DishCommentController', ['$scope', 'menuFactory', '$timeout', function($scope, menuFactory, $timeout) {
         // Step 1: Create a JavaScript object to hold the comment from the form
         $scope.comments = {
             rating: 5,
@@ -180,7 +219,7 @@ angular.module('conFusionApp.controllers', [])
         };
         
         $scope.submitComment = function () {
-            
+            $scope.comments.rating = parseInt($scope.comments.rating, 10);
             //Step 2: This is how you record the date
             $scope.comments.date = new Date().toISOString();
             
@@ -190,7 +229,7 @@ angular.module('conFusionApp.controllers', [])
             menuFactory.getDishes().update({id:$scope.dish.id}, $scope.dish);
             
             //Step 4: reset your form to pristine
-            $scope.commentForm.$setPristine();
+//            $scope.commentForm.$setPristine();
 
             //Step 5: reset your JavaScript object that holds your comment
             $scope.comments = {
@@ -199,6 +238,10 @@ angular.module('conFusionApp.controllers', [])
                 comment: "",
                 date: "",
             };
+						
+						$timeout(function() {
+								$scope.closeComment();
+						}, 500);
         };
     }])
 
