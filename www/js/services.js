@@ -4,15 +4,13 @@ angular.module('conFusionApp.services', ['ngResource'])
 
     .constant("baseURL", "http://localhost:3000/")
 
-	.service('menuFactory', ['$resource', 'baseURL', function ($resource, baseURL) { 
-		this.getDishes = function() {
-            return $resource(baseURL+"dishes/:id", null, {'update':{method:'PUT'}});
-        };
-    
-        this.getPromotion = function () {
-            return $resource(baseURL+"promotions/:id", null, {'update':{method:'PUT'}});
-        };
-	}])
+	  .factory('menuFactory', ['$resource', 'baseURL', function ($resource, baseURL) { 
+      return $resource(baseURL+"dishes/:id", null, {'update':{method:'PUT'}});
+		}])
+
+		.factory('promotionFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
+			return $resource(baseURL+"promotions/:id", null, {'update':{method:'PUT'}});
+		}])	
 
     .factory('corporateFactory', ['$resource', 'baseURL', function($resource, baseURL) {
         var corpfac = {};
